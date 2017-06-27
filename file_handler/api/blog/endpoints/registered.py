@@ -3,9 +3,8 @@ import logging
 from flask import request
 from flask_restplus import Resource
 from file_handler.api.blog.business import create_category, delete_category, update_category
-from file_handler.api.blog.serializers import category, category_with_posts
+from file_handler.api.blog.serializers import file_content, rename_content
 from file_handler.api.restplus import api
-from file_handler.database.models import Category
 
 log = logging.getLogger(__name__)
 
@@ -15,17 +14,9 @@ ns = api.namespace('api/registered', description='upload, downloads, list and de
 @ns.route('/')
 class FileCollection(Resource):
 
-    @api.marshal_list_with(category)
-    def get(self):
-        """
-        Returns a list of files in the collection.
-        """
-        categories = Category.query.all()
-        return categories
-
     @api.response(200, 'Collection successfully created.')
     @api.response(401, 'Missing or invalid credentials or token')
-    @api.expect(category)
+    @api.expect(file_content)
     def post(self):
         """
         Creates a new collection.
@@ -46,21 +37,31 @@ class FileCollection(Resource):
         return None, 200
 
 
-@ns.route('/<int:id>')
-@api.response(404, 'File not found.')
+@ns.route('/<string:location>')
+@api.response(401, 'Missing or invalid credentials or token')
 class FileItem(Resource):
 
-    @api.marshal_with(category_with_posts)
-    def get(self, id):
+    @api.response(404, 'File not found.')
+    @api.response(200, 'File successfully retrieved.')
+    def get(self, location):
         """
         Downloads a single file.
         """
-        return Category.query.filter(Category.id == id).one()
+        return None, 200
+
+    @api.expect(rename_content)
+    @api.response(200, 'File name successfully updated.')
+    def patch(self, location):
+        """
+        Renames a file.
+
+        """
+        return None, 200
 
 
-    @api.expect(category)
+    @api.expect(file_content)
     @api.response(204, 'File successfully uploaded.')
-    def put(self, id):
+    def put(self, location):
         """
         Uploads a new file.
         """
@@ -68,10 +69,11 @@ class FileItem(Resource):
         update_category(id, data)
         return None, 204
 
-    @api.response(204, 'File successfully deleted.')
-    def delete(self, id):
+    @api.response(404, 'File not found.')
+    @api.response(200, 'File successfully deleted.')
+    def delete(self, location):
         """
         Deletes a file.
         """
         delete_category(id)
-        return None, 204
+        return None, 200

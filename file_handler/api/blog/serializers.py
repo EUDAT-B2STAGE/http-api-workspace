@@ -21,10 +21,15 @@ page_of_blog_posts = api.inherit('Page of blog posts', pagination, {
     'items': fields.List(fields.Nested(blog_post))
 })
 
-category = api.model('Path to collection', {
-    'path': fields.String(required=True, description='the filesystem path to created collection'),
+file_content = api.model('Content of the file', {
+    'path': fields.String(required=True, description='Content of the file to be uploaded'),
 })
 
-category_with_posts = api.inherit('Blog category with posts', category, {
+rename_content = api.model('Required values for renaming a file', {
+    'newname': fields.String(required=True, description='New name of the file'),
+    'resource': fields.String(required=True, description='The resource to be renamed'),
+})
+
+category_with_posts = api.inherit('Blog category with posts', file_content, {
     'posts': fields.List(fields.Nested(blog_post))
 })
