@@ -2,7 +2,7 @@ import logging
 
 from flask import request
 from flask_restplus import Resource
-from file_handler.api.blog.business import create_category, delete_category, update_category
+from file_handler.api.blog.business import create_collection
 from file_handler.api.blog.serializers import file_content, rename_content
 from file_handler.api.restplus import api
 
@@ -22,7 +22,7 @@ class FileCollection(Resource):
         Creates a new collection.
         """
         data = request.json
-        create_category(data)
+        create_collection(data)
         return None, 201
 
     @api.response(200, 'Clean completed.')
@@ -66,7 +66,7 @@ class FileItem(Resource):
         Uploads a new file.
         """
         data = request.json
-        update_category(id, data)
+
         return None, 204
 
     @api.response(404, 'File not found.')
@@ -75,5 +75,5 @@ class FileItem(Resource):
         """
         Deletes a file.
         """
-        delete_category(id)
+
         return None, 200
