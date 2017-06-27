@@ -10,7 +10,7 @@ from file_handler.database.models import Post
 
 log = logging.getLogger(__name__)
 
-ns = api.namespace('b2access', description='request and refresh authorization from the B2ACCESS service')
+ns = api.namespace('auth', description='request and refresh authorization from the B2ACCESS service')
 
 
 @ns.route('/authorize')

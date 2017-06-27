@@ -21,9 +21,8 @@ page_of_blog_posts = api.inherit('Page of blog posts', pagination, {
     'items': fields.List(fields.Nested(blog_post))
 })
 
-category = api.model('Blog category', {
-    'id': fields.Integer(readOnly=True, description='The unique identifier of a blog category'),
-    'name': fields.String(required=True, description='Category name'),
+category = api.model('Path to collection', {
+    'path': fields.String(required=True, description='the filesystem path to created collection'),
 })
 
 category_with_posts = api.inherit('Blog category with posts', category, {

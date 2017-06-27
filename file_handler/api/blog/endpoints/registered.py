@@ -23,7 +23,8 @@ class FileCollection(Resource):
         categories = Category.query.all()
         return categories
 
-    @api.response(201, 'Collection successfully created.')
+    @api.response(200, 'Collection successfully created.')
+    @api.response(401, 'Missing or invalid credentials or token')
     @api.expect(category)
     def post(self):
         """
@@ -33,7 +34,8 @@ class FileCollection(Resource):
         create_category(data)
         return None, 201
 
-    @api.response(204, 'Collection successfully deleted.')
+    @api.response(200, 'Clean completed.')
+    @api.response(401, 'Missing or invalid credentials or token')
     def delete(self):
         """
         Debug clean up. Deletes a collection.
@@ -41,7 +43,7 @@ class FileCollection(Resource):
 
         #TODO Implement Collections deletion - only if debug mode.
 
-        return None, 204
+        return None, 200
 
 
 @ns.route('/<int:id>')

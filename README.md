@@ -29,6 +29,6 @@ Start the Python Flask server:
 
     python file_handler/app.py
 
-Open a web browser and point to http://localhost:8888/api/
+Open a web browser and point to http://localhost:5000/api/
 
 You should see the Swagger API.
