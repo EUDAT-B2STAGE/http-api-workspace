@@ -1,8 +1,8 @@
 from flask_restplus import fields
 from file_handler.api.restplus import api
 
-file_content = api.model('Content of the file', {
-    'path': fields.String(required=True, description='Content of the file to be uploaded'),
+file_content = api.model('Name of the file', {
+    'filename': fields.String(required=True, description='Name of the file to be uploaded'),
 })
 
 rename_content = api.model('Required values for renaming a file', {
