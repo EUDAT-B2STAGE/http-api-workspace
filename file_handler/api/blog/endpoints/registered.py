@@ -32,19 +32,23 @@ class FileCollection(Resource):
         """
         Creates a new collection.
         """
-        print("**Received file upload request: ")
-        args = upload_parser.parse_args()
-        uploaded_file = args['file']
-        filename = secure_filename(uploaded_file.filename)
-        print("** Uploaded file: ", filename)
+        try:
+            print("**Received file upload request: ")
+            args = upload_parser.parse_args()
+            uploaded_file = args['file']
+            filename = secure_filename(uploaded_file.filename)
 
-        if not os.path.isdir(temp_storage):
-            os.mkdir(temp_storage)
-        os.path.join(temp_storage,filename)
+            if not os.path.isdir(temp_storage):
+                os.mkdir(temp_storage)
+                print("** Storage location created.")
 
+            file_path = os.path.join(temp_storage,filename)
+            uploaded_file.save(file_path)
+            print("** File saved to path: ", file_path)
+            return "File successfully uploaded.", 200
 
-
-        return None, 200
+        except:
+            return "Error occured while uploading the file."
 
     @api.response(200, 'Clean completed.')
     @api.response(401, 'Missing or invalid credentials or token')
