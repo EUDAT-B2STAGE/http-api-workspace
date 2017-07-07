@@ -2,7 +2,7 @@ import logging
 
 import os
 
-from flask import request
+from flask import request, send_from_directory
 from flask_restplus import Resource, reqparse
 from file_handler.api.blog.business import upload_files, create_collection
 from file_handler.api.blog.serializers import file_content, rename_content
@@ -62,17 +62,23 @@ class FileCollection(Resource):
         return None, 200
 
 
-@ns.route('/<string:location>')
+@ns.route('/<string:filename>')
 @api.response(401, 'Missing or invalid credentials or token')
 class FileItem(Resource):
 
     @api.response(404, 'File not found.')
     @api.response(200, 'File successfully retrieved.')
-    def get(self, location):
+    def get(self, filename):
         """
         Downloads a single file.
         """
-        return None, 200
+        print("Request received to download file: ", filename)
+
+        try:
+            return send_from_directory(temp_storage, filename)
+        except:
+            return "Error occured while retrieving the file."
+
 
     @api.expect(rename_content)
     @api.response(200, 'File name successfully updated.')
