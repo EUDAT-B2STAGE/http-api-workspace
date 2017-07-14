@@ -17,6 +17,10 @@ To download the code use:
 
     git clone https://github.com/charaka1/eudat-file-handler.git
 
+Move to the file handler base directory:
+
+    cd eudat-file-handler/
+
 Install the necessary libraries:
 
     pip install -r requirements.txt
