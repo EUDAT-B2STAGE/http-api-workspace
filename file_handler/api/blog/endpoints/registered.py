@@ -2,16 +2,19 @@ import logging
 import os
 import zipfile
 
-from flask import request, send_from_directory, send_file
+from flask import request, send_from_directory
 from flask_restplus import Resource, reqparse
 from file_handler.api.blog.business import upload_files, create_collection, APP_ROOT
-from file_handler.api.blog.serializers import file_content, rename_content
+from file_handler.api.blog.serializers import collection_name, rename_content
 from file_handler.api.restplus import api
 
 from shutil import make_archive
 
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
+
+collection_parser = reqparse.RequestParser()
+collection_parser.add_argument('collection_name', required=True, location='args')
 
 upload_parser = reqparse.RequestParser()
 upload_parser.add_argument('file', type=FileStorage, location='files', required=True)
@@ -27,30 +30,34 @@ temp_storage = os.path.join(APP_ROOT, 'myworkspace/')
 @ns.route('/')
 class FileCollection(Resource):
 
+    @api.expect(collection_parser)
+    #@api.expect(upload_parser)
     @api.response(200, 'Collection successfully created.')
     @api.response(401, 'Missing or invalid credentials or token')
-    @api.expect(upload_parser)
     def post(self):
         """
         Creates a new collection.
         """
+
+        print("**Received a request to create a new Collection: ")
+
         try:
-            print("**Received file upload request: ")
-            args = upload_parser.parse_args()
-            uploaded_file = args['file']
-            filename = secure_filename(uploaded_file.filename)
+            args = collection_parser.parse_args()
+            print("Collection is parsed!")
+            col_name = args['collection_name']
+            print("Collection to be created: ", col_name)
 
-            if not os.path.isdir(temp_storage):
-                os.mkdir(temp_storage)
-                print("** Storage location created.")
-
-            file_path = os.path.join(temp_storage,filename)
-            uploaded_file.save(file_path)
-            print("** File saved to path: ", file_path)
-            return "File successfully uploaded.", 200
+            #absFilePath = APP_ROOT + "/" + location
+            #print("Location to be created: ", absFilePath)
+            #if not os.path.exists(absFilePath):
+            #    os.mkdir(absFilePath)
+            #    print("Location created.")
+            #    return "Collection successfully created.", 200
+            #else:
+            #   return "Collection already exists.", 204
 
         except:
-            return "Error occured while uploading the file."
+            return "Error occured while trying to create the collection."
 
     @api.response(200, 'Clean completed.')
     @api.response(401, 'Missing or invalid credentials or token')
@@ -128,6 +135,8 @@ class FileItem(Resource):
         Renames a file.
 
         """
+        data = request.json
+        print(data)
         return None, 200
 
     @api.expect(upload_parser)
@@ -138,13 +147,32 @@ class FileItem(Resource):
         """
         # TODO Use location passed in to store the file.
 
-        print("**Received file upload request: " + location)
+        try:
+            print("**Received file upload request: ")
 
-        loc = location
+            absFilePath = APP_ROOT + "/" + location
+            print("Checking for dir: ", absFilePath)
 
-        upload_files(request)
+            # First check location exists.
+            if not os.path.exists(absFilePath):
+                return "No such location", 404
 
-        return None, 204
+            args = upload_parser.parse_args()
+            uploaded_file = args['file']
+            filename = secure_filename(uploaded_file.filename)
+
+            if not os.path.isdir(temp_storage):
+                os.mkdir(temp_storage)
+                print("** Storage location created.")
+
+            file_path = os.path.join(temp_storage,filename)
+            uploaded_file.save(file_path)
+            print("** File saved to path: ", file_path)
+            return "File successfully uploaded.", 200
+
+        except:
+            return "Error occured while uploading the file."
+
 
     @api.response(404, 'File not found.')
     @api.response(200, 'File successfully deleted.')
