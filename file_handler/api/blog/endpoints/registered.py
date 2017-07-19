@@ -31,7 +31,6 @@ temp_storage = os.path.join(APP_ROOT, 'myworkspace/')
 class FileCollection(Resource):
 
     @api.expect(collection_parser)
-    #@api.expect(upload_parser)
     @api.response(200, 'Collection successfully created.')
     @api.response(401, 'Missing or invalid credentials or token')
     def post(self):
@@ -44,17 +43,17 @@ class FileCollection(Resource):
         try:
             args = collection_parser.parse_args()
             print("Collection is parsed!")
-            col_name = args['collection_name']
-            print("Collection to be created: ", col_name)
+            workspace = args['collection_name']
+            print("Collection to be created: ", workspace)
 
-            #absFilePath = APP_ROOT + "/" + location
-            #print("Location to be created: ", absFilePath)
-            #if not os.path.exists(absFilePath):
-            #    os.mkdir(absFilePath)
-            #    print("Location created.")
-            #    return "Collection successfully created.", 200
-            #else:
-            #   return "Collection already exists.", 204
+            absFilePath = APP_ROOT + "/" + workspace
+            print("Location to be created: ", absFilePath)
+            if not os.path.exists(absFilePath):
+                os.mkdir(absFilePath)
+                print("Location created.")
+                return "Collection successfully created.", 200
+            else:
+               return "Collection already exists.", 204
 
         except:
             return "Error occured while trying to create the collection."
@@ -161,11 +160,11 @@ class FileItem(Resource):
             uploaded_file = args['file']
             filename = secure_filename(uploaded_file.filename)
 
-            if not os.path.isdir(temp_storage):
-                os.mkdir(temp_storage)
-                print("** Storage location created.")
+            if not os.path.isdir(absFilePath):
+                os.mkdir(absFilePath)
+                print("** Storage location created: ", absFilePath)
 
-            file_path = os.path.join(temp_storage,filename)
+            file_path = os.path.join(absFilePath,filename)
             uploaded_file.save(file_path)
             print("** File saved to path: ", file_path)
             return "File successfully uploaded.", 200
@@ -181,4 +180,17 @@ class FileItem(Resource):
         Deletes a file.
         """
 
-        return None, 200
+        try:
+            absFilePath = APP_ROOT + "/" + location
+            print("**Full file path", absFilePath)
+
+            if not os.path.exists(absFilePath):
+                return "No such location.", 404
+
+            filename = os.path.basename(absFilePath)
+            print("About to delete the file: ", filename)
+
+            return None, 200
+
+        except:
+            return "Error occured while trying to delete the file."
