@@ -126,7 +126,6 @@ class FileItem(Resource):
             return "File not found.", 404
 
 
-
     @api.expect(rename_content)
     @api.response(200, 'File name successfully updated.')
     def patch(self, location):
@@ -144,7 +143,6 @@ class FileItem(Resource):
         """
         Uploads a new file.
         """
-        # TODO Use location passed in to store the file.
 
         try:
             print("**Received file upload request: ")
@@ -190,7 +188,14 @@ class FileItem(Resource):
             filename = os.path.basename(absFilePath)
             print("About to delete the file: ", filename)
 
-            return None, 200
+            #Check location is pointing to file (not a directory)
+            if filename == "":
+                return "Please provide a filename in the workspace instead of a directory", 404
+            
+            os.remove(absFilePath)
+            print("File is deleted sucessfully")
+
+            return "File is deleted sucessfully.", 200
 
         except:
             return "Error occured while trying to delete the file."
