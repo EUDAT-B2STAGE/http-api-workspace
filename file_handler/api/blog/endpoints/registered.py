@@ -151,9 +151,29 @@ class FileItem(Resource):
         Renames a file.
 
         """
-        data = request.json
-        print(data)
-        return None, 200
+        try:
+            print("Request received to rename a file at: ", location)
+            data = request.json
+            current_file_name = data["current_file_name"]
+            new_file_name = data["new_file_name"]
+            print("current_file_name: ", current_file_name)
+            print("new_file_name: ", new_file_name)
+
+            workspace = APP_ROOT + "/" + location
+            absFilePath = workspace + "/" + current_file_name
+            print("**Full current file path", absFilePath)
+
+            if not os.path.exists(absFilePath):
+                return "No such file", 404
+
+            newAbsFilePath = os.path.join(workspace, new_file_name)
+            print("Full new file path: ", newAbsFilePath)
+
+            os.rename(absFilePath, newAbsFilePath)
+            return "File is sucessfully renamed", 200
+
+        except:
+         return "An error occured renaming the file"
 
     @api.expect(upload_parser)
     @api.response(204, 'File successfully uploaded.')
