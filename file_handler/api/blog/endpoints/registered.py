@@ -21,7 +21,7 @@ upload_parser.add_argument('file', type=FileStorage, location='files', required=
 
 log = logging.getLogger(__name__)
 
-ns = api.namespace('api/registered', description='upload, downloads, list and delete objects')
+ns = api.namespace('api/workspace', description='upload, downloads, list and delete objects')
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -53,21 +53,39 @@ class FileCollection(Resource):
                 print("Location created.")
                 return "Collection successfully created.", 200
             else:
-               return "Collection already exists.", 204
+               return "Collection already exists", 403
 
         except:
             return "Error occured while trying to create the collection."
 
-    @api.response(200, 'Clean completed.')
+    @api.expect(collection_parser)
+    @api.response(200, 'Collection deleted successfully.')
     @api.response(401, 'Missing or invalid credentials or token')
     def delete(self):
         """
         Debug clean up. Deletes a collection.
         """
 
-        #TODO Implement Collections deletion - only if debug mode.
+        print("**Received a request to delete a Collection: ")
 
-        return None, 200
+        try:
+            args = collection_parser.parse_args()
+            print("Collection is parsed!")
+            workspace = args['collection_name']
+            print("Collection to be deleted: ", workspace)
+
+            absFilePath = APP_ROOT + "/" + workspace
+            print("Location to be deleted: ", absFilePath)
+
+            #Check if the collection is empty
+            if os.listdir(absFilePath):
+                return "Collection is *not* empty", 403
+
+            os.rmdir(absFilePath)
+            return "Collection is deleted successfully", 200
+
+        except:
+            return "Error occured while trying to delete the collection."
 
 
 @ns.route('/<path:location>')
@@ -191,7 +209,7 @@ class FileItem(Resource):
             #Check location is pointing to file (not a directory)
             if filename == "":
                 return "Please provide a filename in the workspace instead of a directory", 404
-            
+
             os.remove(absFilePath)
             print("File is deleted sucessfully")
 
