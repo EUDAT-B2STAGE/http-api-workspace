@@ -125,14 +125,12 @@ class FileItem(Resource):
                     os.remove(fullZipFileName)
 
                 zFile = zipfile.ZipFile(fullZipFileName, 'w', zipfile.ZIP_DEFLATED)
-                #listOfFiles = os.listdir(absFilePath)
                 for root, dirs, files in os.walk(absFilePath):
                    for file in files:
                        print("Adding file: ", file)
                        zFile.write(absFilePath+file)
                 print("Zip file generated")
                 return send_from_directory(zipDir, zipFileName)
-                #os.remove(fullZipFileName)
 
             else:
                 print("Requesting a single file in a directory.")
@@ -171,7 +169,6 @@ class FileItem(Resource):
 
             os.rename(absFilePath, newAbsFilePath)
             return "File is sucessfully renamed", 200
-
         except:
          return "An error occured renaming the file"
 
@@ -231,8 +228,6 @@ class FileItem(Resource):
                 return "Please provide a filename in the workspace instead of a directory", 404
 
             os.remove(absFilePath)
-            print("File is deleted sucessfully")
-
             return "File is deleted sucessfully.", 200
 
         except:

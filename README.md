@@ -1,7 +1,14 @@
-EUDAT File Handler
-==================
+EUDAT File/Workspace Handler
+============================
 
-This repository contains a RESTful API based on Flask and Flask-RESTPlus for EUDAT File Handler.
+This repository contains a prototype RESTful web service for EUDAT File/Workspace Handler based on
+Flask and Flask-RESTPlus extension. Flask-RESTPlus extention is used for generating the Swagger API.
+Since Flask-RESTPlus requires Python 2.7, this implementation is only tested with Python 2.7.
+
+Note that this is just a prototype developed to capture requirements and behaviour of a workspace handler
+for EUDAT CDI. Please do *not* get too distracted with the particular technologies used. instead, please
+*do* focus on on whether the REST API is suitable for typical usage of such workspace handler. Also, please
+do comment on status codes returned and the behaviour.
 
 To use the handler, first create a directory and move in to it; for example
 
