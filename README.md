@@ -43,3 +43,14 @@ Start the Python Flask server:
 Open a web browser and point to http://localhost:5000/api/
 
 You should see the Swagger API.
+
+Run the system tests to check that the Workspace interface works as expected.
+On a separate command shell move to the file handler base directory, i.e.:
+
+    eudat/file-handler
+
+Then run the nosetests:
+
+    nosetests -v
+
+These system tests also serve as examples of how to use the Workspace API.
