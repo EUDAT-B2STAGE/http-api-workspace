@@ -2,7 +2,7 @@ import logging
 import os
 import zipfile
 
-from flask import request, send_from_directory
+from flask import request, send_from_directory, session
 from flask_restplus import Resource, reqparse
 from file_handler.api.blog.business import upload_files, create_collection, APP_ROOT
 from file_handler.api.blog.serializers import collection_name, rename_content
@@ -37,6 +37,8 @@ class FileCollection(Resource):
         """
         Creates a new collection.
         """
+        if not 'b2access_token' in session:
+            return "Missing or invalid credentials or token", 401
 
         print("**Received a request to create a new Collection: ")
 
@@ -65,6 +67,9 @@ class FileCollection(Resource):
         """
         Debug clean up. Deletes a collection.
         """
+
+        if not 'b2access_token' in session:
+            return "Missing or invalid credentials or token", 401
 
         print("**Received a request to delete a Collection: ")
 
@@ -97,6 +102,10 @@ class FileItem(Resource):
         """
         Downloads a single file or zipped multiple files in a directory.
         """
+
+        if not 'b2access_token' in session:
+            return "Missing or invalid credentials or token", 401
+
         print("Request received to download file: ", location)
 
         try:
@@ -149,6 +158,9 @@ class FileItem(Resource):
         Renames a file.
 
         """
+        if not 'b2access_token' in session:
+            return "Missing or invalid credentials or token", 401
+
         try:
             print("Request received to rename a file at: ", location)
             data = request.json
@@ -178,6 +190,9 @@ class FileItem(Resource):
         """
         Uploads a new file.
         """
+
+        if not 'b2access_token' in session:
+            return "Missing or invalid credentials or token", 401
 
         try:
             print("**Received file upload request: ")
@@ -212,6 +227,9 @@ class FileItem(Resource):
         """
         Deletes a file.
         """
+
+        if not 'b2access_token' in session:
+            return "Missing or invalid credentials or token", 401
 
         try:
             absFilePath = APP_ROOT + "/" + location
