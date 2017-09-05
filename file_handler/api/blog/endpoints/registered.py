@@ -1,6 +1,7 @@
 import logging
 import os
 import zipfile
+from file_handler import app_settings
 
 from flask import request, send_from_directory, session
 from flask_restplus import Resource, reqparse
@@ -37,7 +38,8 @@ class FileCollection(Resource):
         """
         Creates a new collection.
         """
-        if not 'b2access_token' in session:
+
+        if not 'b2access_token' in session and app_settings.AA_ON:
             return "Missing or invalid credentials or token", 401
 
         print("**Received a request to create a new Collection: ")
@@ -68,7 +70,7 @@ class FileCollection(Resource):
         Debug clean up. Deletes a collection.
         """
 
-        if not 'b2access_token' in session:
+        if not 'b2access_token' in session and app_settings.AA_ON:
             return "Missing or invalid credentials or token", 401
 
         print("**Received a request to delete a Collection: ")
@@ -103,7 +105,7 @@ class FileItem(Resource):
         Downloads a single file or zipped multiple files in a directory.
         """
 
-        if not 'b2access_token' in session:
+        if not 'b2access_token' in session and app_settings.AA_ON:
             return "Missing or invalid credentials or token", 401
 
         print("Request received to download file: ", location)
@@ -158,7 +160,7 @@ class FileItem(Resource):
         Renames a file.
 
         """
-        if not 'b2access_token' in session:
+        if not 'b2access_token' in session and app_settings.AA_ON:
             return "Missing or invalid credentials or token", 401
 
         try:
@@ -191,7 +193,7 @@ class FileItem(Resource):
         Uploads a new file.
         """
 
-        if not 'b2access_token' in session:
+        if not 'b2access_token' in session and app_settings.AA_ON:
             return "Missing or invalid credentials or token", 401
 
         try:
@@ -228,7 +230,7 @@ class FileItem(Resource):
         Deletes a file.
         """
 
-        if not 'b2access_token' in session:
+        if not 'b2access_token' in session and app_settings.AA_ON:
             return "Missing or invalid credentials or token", 401
 
         try:

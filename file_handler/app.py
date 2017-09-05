@@ -9,11 +9,9 @@ from file_handler.api.blog.endpoints.authorization import ns as authorization_na
 from file_handler.api.restplus import api
 from file_handler.database import db
 
-from flask_oauthlib.client import OAuth, prepare_request
+from flask_oauthlib.client import OAuth
 
 from base64 import b64encode
-
-#
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
@@ -41,22 +39,37 @@ b2access = oauth.remote_app(
     authorize_url='https://unity.eudat-aai.fz-juelich.de:8443/oauth2-as/oauth2-authz'
 )
 
+#@app.route('/')
+#def index():
+#    if 'b2access_token' in session:
+#        return 'Logged in. <a href="%s">Log out</a>' % url_for('logout')
+#    else:
+#        return 'Not logged in. <a href="%s">Log in</a>' % url_for('login')
+
 @app.route('/')
 def index():
+
+    if not settings.AA_ON:
+        return redirect('/api')
+
     if 'b2access_token' in session:
-        return 'Logged in. <a href="%s">Log out</a>' % url_for('logout')
+        return 'Logged in. <a href="%s">Log out?</a>' % url_for('logout')
     else:
-        return 'Not logged in. <a href="%s">Log in</a>' % url_for('login')
+        return login()
+
 
 @app.route('/login')
 def login():
-    return b2access.authorize(callback=url_for('authorized', _external=True))
+    if not 'b2access_token' in session:
+        return b2access.authorize(callback=url_for('authorized', _external=True))
+    else:
+        return redirect('/api')
 
 
 @app.route('/logout')
 def logout():
     session.pop('b2access_token', None)
-    return redirect(url_for('index'))
+    return redirect('/api')
 
 
 def decorate_http_request(remote):
@@ -90,10 +103,11 @@ def authorized():
         session.pop('origin', None)
         # redirect to where the request came from
         return redirect(url_for(origin))
-    me = b2access.get('userinfo')
-    # print(b2access.get('tokeninfo'))
-    # print(me.data)
-    return jsonify(me.data)
+    #me = b2access.get('userinfo')
+    ## print(b2access.get('tokeninfo'))
+    ## print(me.data)
+    #return jsonify(me.data)
+    return redirect('/api')
 
 
 @b2access.tokengetter
@@ -125,6 +139,7 @@ def initialize_app(flask_app):
 def main():
     initialize_app(app)
     log.info('** Starting development server at http://{}/api/'.format(app.config['SERVER_NAME']))
+    log.info('Authentication and Authorisation: %s', settings.AA_ON)
     app.run(debug=settings.FLASK_DEBUG)
 
 if __name__ == "__main__":
